@@ -1,16 +1,15 @@
 {
   "date": "2026-10-06",
-  "close": 3.435,
-  "buy": null,
-  "sell": null,
-  "previousClose": 3.436,
-  "change": -0.001,
-  "changePct": -0.03,
-  "source": "BCRP",
-  "series": {
-    "buy": "PD04645PD",
-    "sell": "PD04646PD"
-  },
-  "bcrpPeriodLabel": null,
-  "updatedAtLima": "2026-10-06T13:30:00-05:00"
+  "close": 3.4345,
+  "previousClose": 3.434,
+  "open": null,
+  "low": null,
+  "high": null,
+  "average": null,
+  "buy": 3.434,
+  "sell": 3.435,
+  "change": 0.0005,
+  "changePct": 0.01,
+  "source": "BCRPData API",
+  "updatedAtLima": "2026-10-07T14:29:41-05:00"
 }
