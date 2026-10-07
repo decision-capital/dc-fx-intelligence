@@ -1,20 +1,17 @@
 {
-  "updated": "06 oct 2026 · 1:30 p. m.",
+  "updated": "06 oct 2026 · cierre BCRP",
   "usdpen": {
-    "last": 3.431,
-    "change": -0.18,
-    "open": 3.425,
-    "high": 3.438,
-    "low": 3.417,
-    "close": 3.431,
-    "average": 3.4281
+    "live": null,
+    "close": 3.4350,
+    "previousClose": null,
+    "bias": "--",
+    "range": "--"
   },
-  "global": {
-    "DXY": "101.20",
-    "UST 10Y": "5.02%",
-    "Cobre": "US$ 4.82",
-    "Oro": "US$ 3,900",
-    "VIX": "18.4"
-  },
-  "comment": "El USD/PEN mantiene una sesión de consolidación, con demanda de dólares apareciendo cerca de los mínimos intradía. El comportamiento global del dólar, las tasas de los Treasuries y los flujos corporativos locales continúan siendo los principales drivers de corto plazo."
+  "comment": "El cierre oficial del USD/PEN fue S/ 3.4350. En esta etapa inicial, el dato de cierre se actualiza manualmente para evitar mostrar cifras de prueba como si fueran cotizaciones reales. La automatización con fuente oficial del BCRP será el siguiente paso.",
+  "global": [
+    {"label": "DXY", "value": "--"},
+    {"label": "UST 10Y", "value": "--"},
+    {"label": "Cobre", "value": "--"},
+    {"label": "Oro", "value": "--"}
+  ]
 }
