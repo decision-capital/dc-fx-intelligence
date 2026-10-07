@@ -2,6 +2,12 @@ name: Update BCRP USD-PEN
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-bcrp.yml"
+      - "scripts/update-bcrp.mjs"
   schedule:
     # Peru is UTC-5. Runs on weekdays at 2:15, 2:45, 3:15 and 4:00 PM Lima time.
     - cron: "15 19 * * 1-5"
