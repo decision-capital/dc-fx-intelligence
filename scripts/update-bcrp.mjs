@@ -92,6 +92,10 @@ async function fetchHomepageData() {
 
   const text = transport === "direct" ? raw : raw.replace(/\s+/g, " ").trim();
 
+  if (transport === "reader") {
+    console.log("BCRP reader sample:", text.slice(0, 3500));
+  }
+
   let tcIndex = text.search(/TIPO DE CAMBIO\s*\(TC\)/i);
   if (tcIndex < 0) tcIndex = text.search(/TC Interbancario\s*\(S\/?\s*por\s*US\$\)/i);
   if (tcIndex < 0) throw new Error("TIPO DE CAMBIO block not found");
