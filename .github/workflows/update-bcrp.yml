@@ -1,0 +1,42 @@
+name: Update BCRP USD-PEN
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Peru is UTC-5. Runs on weekdays at 2:15, 2:45, 3:15 and 4:00 PM Lima time.
+    - cron: "15 19 * * 1-5"
+    - cron: "45 19 * * 1-5"
+    - cron: "15 20 * * 1-5"
+    - cron: "0 21 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  update-bcrp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch latest BCRP close
+        run: node scripts/update-bcrp.mjs
+
+      - name: Commit updated data
+        run: |
+          if git diff --quiet -- data/usdpen.json public/usdpen.json; then
+            echo "No new BCRP data to commit."
+            exit 0
+          fi
+
+          git config user.name "dc-market-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/usdpen.json public/usdpen.json
+          git commit -m "Update BCRP USD-PEN close"
+          git push
