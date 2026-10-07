@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const BCRP_PAGE = "https://www.bcrp.gob.pe/101-portada/operaciones-monetarias-y-cambiarias.html";
+const BCRP_READER_PAGE =
+  "https://r.jina.ai/https://www.bcrp.gob.pe/101-portada/operaciones-monetarias-y-cambiarias.html";
 const API_URL =
   "https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04645PD-PD04646PD/json";
 
@@ -60,16 +62,35 @@ async function readExisting() {
   catch { return null; }
 }
 
-async function fetchHomepageData() {
-  const res = await fetch(BCRP_PAGE, {
+async function fetchText(url, accept) {
+  const res = await fetch(url, {
     headers: {
       "user-agent": "Mozilla/5.0 Decision-Capital-FX/1.0",
-      accept: "text/html,application/xhtml+xml",
+      accept,
     },
   });
-  if (!res.ok) throw new Error(`BCRP homepage HTTP ${res.status}`);
-  const html = await res.text();
-  const text = cleanText(html);
+  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+  return await res.text();
+}
+
+async function fetchHomepageData() {
+  let raw;
+  let transport = "direct";
+
+  try {
+    raw = await fetchText(BCRP_PAGE, "text/html,application/xhtml+xml");
+    const directText = cleanText(raw);
+    if (!/TIPO DE CAMBIO\s*\(TC\)|TC Interbancario/i.test(directText)) {
+      throw new Error("Direct BCRP response did not contain the FX block");
+    }
+    raw = directText;
+  } catch (directErr) {
+    console.warn("Direct BCRP fetch failed:", directErr.message);
+    transport = "reader";
+    raw = await fetchText(BCRP_READER_PAGE, "text/plain,text/markdown");
+  }
+
+  const text = transport === "direct" ? raw : raw.replace(/\s+/g, " ").trim();
 
   let tcIndex = text.search(/TIPO DE CAMBIO\s*\(TC\)/i);
   if (tcIndex < 0) tcIndex = text.search(/TC Interbancario\s*\(S\/?\s*por\s*US\$\)/i);
@@ -109,7 +130,8 @@ async function fetchHomepageData() {
     low: round4(low),
     high: round4(high),
     average: round4(average),
-    source: "BCRP homepage / Datatec",
+    source: transport === "direct" ? "BCRP / Datatec" : "BCRP / Datatec (transported via reader)",
+    transport,
     raw: { prevOpen, prevLow, prevHigh, prevAverage }
   };
 }
