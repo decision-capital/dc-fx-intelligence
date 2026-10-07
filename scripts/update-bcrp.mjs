@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const BCRP_PAGE = "https://www.bcrp.gob.pe/operaciones-monetarias-y-cambiarias.html";
+const BCRP_PAGE = "https://www.bcrp.gob.pe/101-portada/operaciones-monetarias-y-cambiarias.html";
 const API_URL =
   "https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PD04645PD-PD04646PD/json";
 
@@ -71,7 +71,8 @@ async function fetchHomepageData() {
   const html = await res.text();
   const text = cleanText(html);
 
-  const tcIndex = text.search(/TIPO DE CAMBIO\s*\(TC\)/i);
+  let tcIndex = text.search(/TIPO DE CAMBIO\s*\(TC\)/i);
+  if (tcIndex < 0) tcIndex = text.search(/TC Interbancario\s*\(S\/?\s*por\s*US\$\)/i);
   if (tcIndex < 0) throw new Error("TIPO DE CAMBIO block not found");
   const block = text.slice(tcIndex, tcIndex + 5000);
 
@@ -129,7 +130,11 @@ async function fetchApiFallback() {
   if (buy === null || sell === null) throw new Error("Invalid API observation");
 
   const label = String(last?.name || "");
-  const m = label.match(/(\d{1,2})\s*([A-Za-zÁÉÍÓÚÑáéíóúñ]{3})\s*(\d{2,4})/);
+  const normalizedLabel = label
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^0-9A-Za-z]/g, "");
+  const m = normalizedLabel.match(/^(\d{1,2})([A-Za-z]{3})(\d{2,4})$/);
   let date = null;
   if (m) {
     let y = Number(m[3]); if (y < 100) y += 2000;
